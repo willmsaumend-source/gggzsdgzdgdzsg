@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>bogdan_1924 — landing</title>
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;800&display=swap');
+    :root{
+      --accent: #f0f13c;
+      --neon: rgba(0,200,255,0.95);
+    }
+    html,body{height:100%;margin:0;font-family:Montserrat,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:#000;}
+    body{overflow:hidden}
+
+    /* Intro */
+    .intro{
+      position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+      background:#000;z-index:9999;flex-direction:column;gap:20px;
+      animation: fadeIn 1s ease forwards;
+    }
+    .intro h1{
+      color:var(--accent);
+      font-size:32px;
+      text-shadow:0 0 10px var(--accent),0 0 20px var(--neon),0 0 40px var(--accent);
+      animation: pulse 2s infinite;
+    }
+    .enter-btn{
+      padding:14px 28px;
+      background:var(--accent);
+      border:none;
+      border-radius:12px;
+      font-weight:700;
+      font-size:18px;
+      cursor:pointer;
+      color:#000;
+      box-shadow:0 0 20px var(--accent),0 0 40px var(--neon);
+      transition:transform .2s ease;
+    }
+    .enter-btn:hover{transform:scale(1.05)}
+
+    @keyframes pulse{
+      0%,100%{text-shadow:0 0 10px var(--accent),0 0 20px var(--neon)}
+      50%{text-shadow:0 0 20px var(--accent),0 0 40px var(--neon)}
+    }
+    @keyframes fadeOut{to{opacity:0;visibility:hidden}}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+    .stage{display:none;position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#000;}
+    .bg-gif{position:absolute;inset:0;background-repeat:no-repeat;background-position:center top;background-size:cover;filter:contrast(0.9) saturate(0.8) brightness(0.25);transform:scale(1.02);z-index:0;}
+    .stage::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center, rgba(0,0,0,0) 30%, rgba(0,0,0,0.6) 100%);z-index:3;pointer-events:none;}
+    #particleCanvas{position:absolute;inset:0;z-index:2;pointer-events:none}
+    #rainCanvas{position:absolute;inset:0;z-index:2;pointer-events:none}
+
+    .card{position:relative;z-index:5;width:min(920px,88vw);text-align:center;padding:36px 36px 48px;border-radius:18px;backdrop-filter: blur(6px) saturate(120%);
+      background: linear-gradient(180deg, rgba(10,10,12,0.25), rgba(8,8,10,0.15));box-shadow:0 10px 40px rgba(0,0,0,0.6);border:1px solid rgba(255,238,100,0.06);
+      display:flex;flex-direction:column;align-items:center;gap:12px;min-height:420px;justify-content:center;}
+    .avatar{width:110px;height:110px;border-radius:999px;overflow:hidden;border:3px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;}
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block;}
+    h1,.handle,.sub,.location,.meta,.volume-control span,.eye,label{text-shadow:0 0 8px var(--accent),0 0 16px var(--accent),0 0 24px var(--neon);}
+    h1{margin:6px 0 0;font-size:34px;color:var(--neon);font-weight:800}
+    .handle{color:var(--accent);font-weight:700;font-size:30px;margin-top:6px;letter-spacing:0.6px}
+    .sub{color:rgba(255,255,255,0.9);font-weight:600;margin-top:6px}
+    .location{display:flex;gap:8px;align-items:center;color:rgba(255,255,255,0.8);font-size:14px;margin-top:6px}
+    .icons{display:flex;gap:18px;margin-top:18px}
+    .icon-btn{width:58px;height:58px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(180deg, rgba(0,0,0,0.35), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.04);backdrop-filter: blur(4px);
+      transition:transform .22s ease, box-shadow .22s ease;cursor:pointer}
+    .icon-btn:hover{transform:translateY(-6px) scale(1.03);box-shadow:0 10px 30px rgba(0,0,0,0.5)}
+    .icon-btn svg{width:30px;height:30px;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.4))}
+    .meta{display:flex;gap:12px;align-items:center;color:var(--accent);margin-top:18px;font-weight:700}
+    .volume-control{margin-top:14px;display:flex;align-items:center;gap:10px;color:rgba(255,255,255,0.9)}
+    .volume-control input{accent-color:var(--accent);}
+    .eye{position:absolute;left:36px;bottom:24px;color:var(--accent);z-index:6;font-weight:700}
+    @media (max-width:520px){h1{font-size:22px}.handle{font-size:20px}.card{padding:20px;border-radius:14px}}
+  </style>
+</head>
+<body>
+  <!-- Intro -->
+  <div class="intro">
+    <h1>✨ Click to Enter ✨</h1>
+    <button class="enter-btn">ENTER</button>
+  </div>
+
+  <!-- Main page -->
+  <div class="stage">
+    <div class="bg-gif" id="bg" style="background-image:url('gif-sukuna.gif');"></div>
+    <canvas id="rainCanvas"></canvas>
+    <canvas id="particleCanvas"></canvas>
+
+    <div class="card">
+      <div class="avatar">
+        <img src="profile.jpg" alt="avatar">
+      </div>
+      <div class="handle">bogdan_1924</div>
+      <div class="sub">INTRATI PE SERVER DE DISCORD !</div>
+      <div class="location">📍 Canyon Lake Dr, Los Angeles</div>
+
+      <!-- Social Icons -->
+      <div class="icons" aria-label="social links">
+        <!-- Discord -->
+        <a class="icon-btn" href="https://discord.gg/wRYrUh88fQ" target="_blank" title="Discord">
+          <svg viewBox="0 0 71 55" xmlns="http://www.w3.org/2000/svg" fill="none">
+            <path fill="url(#discordGrad)" d="M60.104 4.552a58.01 58.01 0 0 0-13.748-4.3.067.067 0 0 0-.07.034c-.595 1.09-1.25 2.513-1.716 3.65-5.094-.762-10.184-.762-15.246 0-.464-1.137-1.12-2.56-1.716-3.65a.067.067 0 0 0-.07-.034 58.095 58.095 0 0 0-13.748 4.3.061.061 0 0 0-.028.023C.933 18.25-.296 31.77.293 45.178c.001.14.054.278.149.38 6.057 7.115 11.746 11.23 17.463 13.996a.066.066 0 0 0 .072-.023c1.344-1.85 2.544-3.8 3.6-5.792a.067.067 0 0 0-.038-.094c-1.36-.66-2.652-1.422-3.862-2.277a.068.068 0 0 1-.006-.112c.259-.194.518-.388.77-.588a.066.066 0 0 1 .069-.008c7.557 3.44 15.716 3.44 23.2 0a.066.066 0 0 1 .07.008c.252.2.511.394.77.588a.067.067 0 0 1-.006.112c-1.21.855-2.502 1.618-3.862 2.277a.067.067 0 0 0-.038.094c1.057 1.992 2.257 3.942 3.6 5.792a.066.066 0 0 0 .072.023c5.717-2.766 11.406-6.881 17.463-13.996a.062.062 0 0 0 .15-.38c.584-13.408-.94-26.929-9.336-40.603a.061.061 0 0 0-.028-.023z"/>
+            <defs>
+              <linearGradient id="discordGrad" x1="0" x2="1">
+                <stop offset="0" stop-color="#7289DA"/>
+                <stop offset="1" stop-color="#99AAB5"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </a>
+
+        <!-- Telegram -->
+        <a class="icon-btn" href="https://t.me/ROLEXffx" target="_blank" title="Telegram">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
+            <path d="M3 12l18-7-4 18-5-6-3 3z" stroke="url(#tgGrad)" stroke-width="0.9" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="tgGrad" x1="0" x2="1">
+                <stop offset="0" stop-color="#00e5ff"/>
+                <stop offset="1" stop-color="#00b4ff"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </a>
+
+        <!-- TikTok -->
+        <a class="icon-btn" href="https://www.tiktok.com/@bogdan_1924?is_from_webapp=1&sender_device=pc" target="_blank" title="TikTok">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
+            <path d="M9 9v6a3 3 0 1 0 3-3V6h3" stroke="url(#tkGrad)" stroke-width="1.1"/>
+            <defs>
+              <linearGradient id="tkGrad" x1="0" x2="1">
+                <stop offset="0" stop-color="#00f0ff"/>
+                <stop offset="1" stop-color="#ff6bdc"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </a>
+      </div>
+
+      <div class="volume-control">
+        <label for="volume">🔊</label>
+        <input type="range" id="volume" min="0" max="1" step="0.01" value="0.5">
+        <span style="font-weight:700">puffin on zootiez (future)</span>
+      </div>
+
+      <div class="meta">Made by bogdan</div>
+    </div>
+
+    <div class="eye">👁️ 1</div>
+  </div>
+
+  <!-- Audio -->
+  <audio id="bgAudio" loop preload="auto">
+    <source src="zootiez.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // Intro -> Main
+    const intro = document.querySelector('.intro');
+    const stage = document.querySelector('.stage');
+    const btn = document.querySelector('.enter-btn');
+    const audio = document.getElementById('bgAudio');
+    const volumeSlider = document.getElementById('volume');
+
+    btn.addEventListener('click', () => {
+      intro.style.animation = 'fadeOut 1s forwards';
+      setTimeout(()=>{
+        intro.style.display = 'none';
+        stage.style.display = 'flex';
+        audio.volume = 0.5;
+        audio.play().catch(e => console.log("Autoplay blocked:", e));
+      }, 1000);
+    });
+
+    if(volumeSlider){
+      volumeSlider.addEventListener('input', ()=>{
+        audio.volume = volumeSlider.value;
+      });
+    }
+
+    // Rain drops
+    const rainCanvas = document.getElementById('rainCanvas');
+    const rctx = rainCanvas.getContext('2d');
+    let RW, RH;
+    function resizeRain(){RW=rainCanvas.width=innerWidth;RH=rainCanvas.height=innerHeight;}
+    resizeRain(); addEventListener('resize',resizeRain);
+
+    const drops = [];
+    for(let i=0;i<200;i++){
+      drops.push({x:Math.random()*RW,y:Math.random()*RH,len:10+Math.random()*20,ys:4+Math.random()*6});
+    }
+
+    function rainDraw(){
+      rctx.clearRect(0,0,RW,RH);
+      rctx.strokeStyle='rgba(240,241,60,0.65)';
+      rctx.lineWidth=1.2;
+      for(let d of drops){
+        rctx.beginPath();
+        rctx.moveTo(d.x,d.y);
+        rctx.lineTo(d.x,d.y+d.len);
+        rctx.stroke();
+        d.y+=d.ys;
+        if(d.y>RH) d.y=-20;
+      }
+      requestAnimationFrame(rainDraw);
+    }
+    rainDraw();
+
+    // Particule
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let W = canvas.width = innerWidth;
+    let H = canvas.height = innerHeight;
+    const particles = [];
+    const N = Math.floor((W*H)/65000);
+    function rand(min,max){return Math.random()*(max-min)+min}
+    function initParticles(){
+      particles.length=0;
+      for(let i=0;i<N;i++){
+        particles.push({x:Math.random()*W,y:Math.random()*H,r:rand(0.8,2.6),vx:rand(-0.1,0.6),vy:rand(-0.05,0.4),alpha:rand(0.3,0.95)});
+      }
+    }
+    function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight;initParticles();}
+    addEventListener('resize',resize);
+    initParticles();
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      for(const p of particles){
+        p.x += p.vx; p.y += p.vy;
+        if(p.x>W+20) p.x=-20; if(p.y>H+20) p.y=-20; if(p.x<-20) p.x=W+20;
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(240,241,60,${p.alpha})`;
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fill();
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+
+    // Parallax bg
+    document.addEventListener('mousemove', e=>{
+      const rx = (e.clientX - innerWidth/2)/innerWidth*20;
+      const ry = (e.clientY - innerHeight/2)/innerHeight*20;
+      document.querySelector('.bg-gif').style.transform = `scale(1.02) translate(${rx}px,${ry}px)`;
+    });
+  </script>
+</body>
+</html>
